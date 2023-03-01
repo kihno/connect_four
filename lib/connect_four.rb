@@ -1,5 +1,5 @@
 class ConnectFour
-  attr_reader :player_token, :ai_token, :gameover
+  attr_reader :player_token, :ai_token
   attr_accessor :board
 
   def initialize
@@ -7,7 +7,6 @@ class ConnectFour
     @board = Array.new(6) { Array.new(7, @empty) }
     @player_token = " \u{2B24} "
     @ai_token = " \u{25CD} "
-    @gameover = false
   end
 
   def print_game
@@ -25,13 +24,14 @@ class ConnectFour
     end
   end
 
-  def check_win
-    # check for horizontal win
+  def horizontal_win?
     @board.each do |row|
-      row.each_cons(4) { |set| @gameover = true if set.uniq.count <= 1 && set[0] != @empty }
+      row.each_cons(4) { |set| return true if set.uniq.count <= 1 && set[0] != @empty }
     end
+    false
+  end
 
-    # check for vertical win
+  def vertical_win?
     col_index = 0
     until col_index > 6
       column = []
@@ -39,9 +39,53 @@ class ConnectFour
         row.each.with_index do |space, index|
           column << space if index == col_index
         end
-        column.each_cons(4) { |set| @gameover = true if set.uniq.count <= 1 && set[0] != @empty }
+        column.each_cons(4) { |set| return true if set.uniq.count <= 1 && set[0] != @empty }
       end
       col_index += 1
     end
+    false
+  end
+
+  def diagonal_win?
+    # check for diagonal (up) win
+    diag_index = 3
+    until diag_index > 8
+      offset_index = diag_index
+      diag = []
+      @board.each do |row|
+        row.each.with_index do |space, index|
+          diag << space if index == offset_index
+        end
+        offset_index -= 1
+        diag.each_cons(4) { |set| return true if set.uniq.count <= 1 && set[0] != @empty }
+      end
+      diag_index += 1
+    end
+
+    # check for diagonal (down) win
+    until diag_index < -2
+      offset_index = diag_index
+      diag = []
+      @board.each do |row|
+        row.each.with_index do |space, index|
+          diag << space if index == offset_index
+        end
+        offset_index += 1
+        diag.each_cons(4) { |set| return true if set.uniq.count <= 1 && set[0] != @empty }
+      end
+      p diag
+      diag_index -= 1
+    end
+    false
+  end
+
+  def tie?
+
+  end
+
+  def gameover?
+    return true if horizontal_win? || vertical_win? || diagonal_win? || tie?
+
+    false
   end
 end

@@ -37,25 +37,18 @@ describe ConnectFour do
     end
   end
 
-  describe "#check_win" do
+  describe "#gameover?" do
     it "doesn't set gameover if win not acheived" do
       game = ConnectFour.new
       game.place_marker(game.player_token, 1)
-      game.check_win
       game.place_marker(game.ai_token, 2)
-      game.check_win
       game.place_marker(game.player_token, 3)
-      game.check_win
       game.place_marker(game.ai_token, 4)
-      game.check_win
       game.place_marker(game.ai_token, 5)
-      game.check_win
       game.place_marker(game.player_token, 6)
-      game.check_win
       game.place_marker(game.ai_token, 7)
-      game.check_win
 
-      expect(game.gameover).to be false
+      expect(game.gameover?).to be false
     end
 
     it "sets gameover if four in a row has been acheived horizontally" do
@@ -64,9 +57,9 @@ describe ConnectFour do
       game.place_marker(game.player_token, 4)
       game.place_marker(game.player_token, 5)
       game.place_marker(game.player_token, 6)
-      game.check_win
+  
 
-      expect(game.gameover).to be true
+      expect(game.gameover?).to be true
     end
 
     it "sets gameover if four in a row has been acheived vertically" do
@@ -75,9 +68,9 @@ describe ConnectFour do
       game.place_marker(game.player_token, 3)
       game.place_marker(game.player_token, 3)
       game.place_marker(game.player_token, 3)
-      game.check_win
+  
 
-      expect(game.gameover).to be true
+      expect(game.gameover?).to be true
     end
 
     it "doesn't return false win if two consecutive columns add up to four in a row" do
@@ -90,12 +83,12 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 4)
       game.place_marker(game.player_token, 4)
       game.place_marker(game.player_token, 4)
-      game.check_win
+  
 
-      expect(game.gameover).to be false
+      expect(game.gameover?).to be false
     end
 
-    xit "sets gameover if four in a row has been acheived diagonally up" do
+    it "sets gameover if four in a row has been acheived diagonally up" do
       game = ConnectFour.new
       game.place_marker(game.player_token, 3)
       game.place_marker(game.ai_token, 4)
@@ -107,12 +100,12 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 6)
       game.place_marker(game.ai_token, 6)
       game.place_marker(game.player_token, 6)
-      game.check_win
+  
 
-      expect(game.gameover).to be true
+      expect(game.gameover?).to be true
     end
 
-    xit "sets gameover if four in a row has been acheived diagonally down" do
+    it "sets gameover if four in a row has been acheived diagonally down" do
       game = ConnectFour.new
       game.place_marker(game.ai_token, 3)
       game.place_marker(game.ai_token, 3)
@@ -124,9 +117,9 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 5)
       game.place_marker(game.player_token, 5)
       game.place_marker(game.player_token, 6)
-      game.check_win
+  
 
-      expect(game.gameover).to be true
+      expect(game.gameover?).to be true
     end
   end
 end
