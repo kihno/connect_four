@@ -57,7 +57,6 @@ describe ConnectFour do
       game.place_marker(game.player_token, 4)
       game.place_marker(game.player_token, 5)
       game.place_marker(game.player_token, 6)
-  
 
       expect(game.gameover?).to be true
     end
@@ -68,7 +67,6 @@ describe ConnectFour do
       game.place_marker(game.player_token, 3)
       game.place_marker(game.player_token, 3)
       game.place_marker(game.player_token, 3)
-  
 
       expect(game.gameover?).to be true
     end
@@ -83,7 +81,6 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 4)
       game.place_marker(game.player_token, 4)
       game.place_marker(game.player_token, 4)
-  
 
       expect(game.gameover?).to be false
     end
@@ -100,7 +97,6 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 6)
       game.place_marker(game.ai_token, 6)
       game.place_marker(game.player_token, 6)
-  
 
       expect(game.gameover?).to be true
     end
@@ -117,7 +113,18 @@ describe ConnectFour do
       game.place_marker(game.ai_token, 5)
       game.place_marker(game.player_token, 5)
       game.place_marker(game.player_token, 6)
-  
+
+      expect(game.gameover?).to be true
+    end
+
+    it "gameover if all spaces are occupied" do
+      game = ConnectFour.new
+      game.board = [[" ◍ ", " ⬤ ", " ◍ ", " ⬤ ", " ⬤ ", " ◍ ", " ◍ "],
+                    [" ⬤ ", " ⬤ ", " ◍ ", " ⬤ ", " ◍ ", " ⬤ ", " ⬤ "],
+                    [" ⬤ ", " ◍ ", " ◍ ", " ◍ ", " ⬤ ", " ◍ ", " ◍ "],
+                    [" ◍ ", " ⬤ ", " ⬤ ", " ◍ ", " ◍ ", " ◍ ", " ⬤ "],
+                    [" ◍ ", " ◍ ", " ◍ ", " ⬤ ", " ⬤ ", " ⬤ ", " ◍ "],
+                    [" ◍ ", " ⬤ ", " ◍ ", " ⬤ ", " ⬤ ", " ◍ ", " ⬤ "]]
 
       expect(game.gameover?).to be true
     end
