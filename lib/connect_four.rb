@@ -9,12 +9,41 @@ class ConnectFour
     @ai_token = " \u{25CD} "
   end
 
+  def game_loop
+    start_message
+    column = validate_location(gets.chomp)
+  end
+
+  def start_message
+    print_game
+    puts 'Choose a column to place a token:'
+  end
+
   def print_game
     puts
     @board.each do |row|
       puts " #{row.join}"
     end
     puts '  1  2  3  4  5  6  7'
+  end
+
+  def validate_location(location)
+    if location.between?(1..7)
+      index = location - 1
+      column = []
+      @board.each do |row|
+        column << row[index] if row[index] == @empty
+      end
+      if column.empty?
+        puts 'That column is full. Please choose another:'
+        validate_location(gets.chomp)
+      else
+        location
+      end
+    else
+      puts 'Please enter a number 1 - 7:'
+      validate_location(gets.chomp)
+    end
   end
 
   def place_marker(marker, column)
