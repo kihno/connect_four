@@ -1,22 +1,49 @@
+require_relative './player.rb'
+require_relative 'token'
+
 class ConnectFour
-  attr_reader :player_token, :ai_token, :empty
+  attr_reader :player_one, :player_two, :current_player, :gameover
   attr_accessor :board
+  include Token
 
   def initialize
-    @empty = " \u{25EF} "
-    @board = Array.new(6) { Array.new(7, @empty) }
-    @player_token = " \u{2B24} "
-    @ai_token = " \u{25CD} "
+    @board = Array.new(6) { Array.new(7, EMPTY) }
+    @player_one = Player.new('You', SOLID)
+    @player_two = Player.new
+    @current_player = @player_one
+    @gameover = false
   end
 
   def game_loop
-    start_message
-    column = validate_location(gets.chomp)
+    until @gameover
+      start_message
+      player_choice = validate_location(gets.chomp)
+      @current_player.place_marker(@board, player_choice)
+      check_gameover
+      toggle_player
+      ai_choice = validate_location(rand(1..7))
+      @current_player.place_marker(@board, ai_choice)
+      print_game
+      toggle_player
+    end
+
+    replay
   end
 
   def start_message
     print_game
     puts 'Choose a column to place a token:'
+  end
+
+  def replay
+    puts 'Do you want to play again? [y/n]'
+    answer = gets.chomp.downcase
+
+    if answer == 'y'
+      start
+    else
+      game_loop
+    end
   end
 
   def print_game
@@ -28,17 +55,19 @@ class ConnectFour
   end
 
   def validate_location(location)
-    if location.between?(1..7)
-      index = location - 1
+    index = location.to_i - 1
+    if index.to_i.between?(0, 6)
       column = []
       @board.each do |row|
-        column << row[index] if row[index] == @empty
+        column << row[index] if row[index] == EMPTY
       end
       if column.empty?
+        validate_location(rand(1..7)) if @current_player == @player_two
+
         puts 'That column is full. Please choose another:'
         validate_location(gets.chomp)
       else
-        location
+        index
       end
     else
       puts 'Please enter a number 1 - 7:'
@@ -46,16 +75,24 @@ class ConnectFour
     end
   end
 
-  def place_marker(marker, column)
-    index = column - 1
-    @board.reverse_each do |row|
-      break row[index] = marker if row[index] == @empty
+  def toggle_player
+    if @current_player == @player_one
+      @current_player = @player_two
+    else
+      @current_player = @player_one
     end
   end
 
+  # def place_marker(marker, column)
+  #   index = column - 1
+  #   @board.reverse_each do |row|
+  #     break row[index] = marker if row[index] == EMPTY
+  #   end
+  # end
+
   def horizontal_win?
     @board.each do |row|
-      row.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != @empty }
+      row.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != EMPTY }
     end
     false
   end
@@ -68,7 +105,7 @@ class ConnectFour
         row.each.with_index do |space, index|
           column << space if index == col_index
         end
-        column.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != @empty }
+        column.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != EMPTY }
       end
       col_index += 1
     end
@@ -86,7 +123,7 @@ class ConnectFour
           diag << space if index == offset_index
         end
         offset_index -= 1
-        diag.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != @empty }
+        diag.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != EMPTY }
       end
       diag_index += 1
     end
@@ -101,7 +138,7 @@ class ConnectFour
           diag << space if index == offset_index
         end
         offset_index += 1
-        diag.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != @empty }
+        diag.each_cons(4) { |set| return true if set.uniq.count == 1 && set[0] != EMPTY }
       end
       diag_index -= 1
     end
@@ -109,13 +146,17 @@ class ConnectFour
   end
 
   def draw?
-    @board.each { |row| return false if row.include?(@empty) }
+    @board.each { |row| return false if row.include?(EMPTY) }
     true
   end
 
-  def gameover?
-    return true if horizontal_win? || vertical_win? || diagonal_win? || draw?
-
-    false
+  def check_gameover
+    if draw?
+      @gameover = true
+      puts 'The game has ended in a draw.'
+    elsif horizontal_win? || vertical_win? || diagonal_win?
+      @gameover = true
+      puts "#{@current_player} won the game."
+    end
   end
 end
