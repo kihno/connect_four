@@ -1,4 +1,4 @@
-require_relative './player.rb'
+require_relative 'player'
 require_relative 'token'
 
 class ConnectFour
@@ -20,10 +20,11 @@ class ConnectFour
       player_choice = validate_location(gets.chomp)
       @current_player.place_marker(@board, player_choice)
       check_gameover
+      break if @gameover
       toggle_player
       ai_choice = validate_location(rand(1..7))
       @current_player.place_marker(@board, ai_choice)
-      print_game
+      check_gameover
       toggle_player
     end
 
@@ -40,9 +41,13 @@ class ConnectFour
     answer = gets.chomp.downcase
 
     if answer == 'y'
-      start
-    else
+      @gameover = false
+      @board = Array.new(6) { Array.new(7, EMPTY) }
       game_loop
+    elsif answer == 'n'
+      exit
+    else
+      replay
     end
   end
 
@@ -52,6 +57,7 @@ class ConnectFour
       puts " #{row.join}"
     end
     puts '  1  2  3  4  5  6  7'
+    puts "\n"
   end
 
   def validate_location(location)
@@ -61,7 +67,7 @@ class ConnectFour
       @board.each do |row|
         column << row[index] if row[index] == EMPTY
       end
-      if column.empty?
+      unless column.include?(EMPTY)
         validate_location(rand(1..7)) if @current_player == @player_two
 
         puts 'That column is full. Please choose another:'
@@ -82,13 +88,6 @@ class ConnectFour
       @current_player = @player_one
     end
   end
-
-  # def place_marker(marker, column)
-  #   index = column - 1
-  #   @board.reverse_each do |row|
-  #     break row[index] = marker if row[index] == EMPTY
-  #   end
-  # end
 
   def horizontal_win?
     @board.each do |row|
@@ -153,10 +152,12 @@ class ConnectFour
   def check_gameover
     if draw?
       @gameover = true
+      print_game
       puts 'The game has ended in a draw.'
     elsif horizontal_win? || vertical_win? || diagonal_win?
       @gameover = true
-      puts "#{@current_player} won the game."
+      print_game
+      puts "#{@current_player.name} won the game."
     end
   end
 end
